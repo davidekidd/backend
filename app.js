@@ -39,11 +39,13 @@ app.use((req, res, next) => {
 });
 
 const indexRouter = require('./app/routes/index');
+const adminAuthRoutes = require("./app/routes/AdminAuth");
 const cashGiftRoutes = require("./app/routes/CashGift");
 const occasionTypeRoutes = require("./app/routes/OccasionType");
 const imageCatgoryRoutes = require("./app/routes/ImageCatgory");
 
 app.use('/api', indexRouter);
+app.use("/api/v1/admin-auth", adminAuthRoutes);
 app.use("/api/v1/cash-gift", cashGiftRoutes);
 app.use("/api/v1/occasion-type", occasionTypeRoutes);
 app.use("/api/v1/image-category", imageCatgoryRoutes);
