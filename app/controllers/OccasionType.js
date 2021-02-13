@@ -1,9 +1,27 @@
 const OccasionTypeModel = require("./../models/OccasionType");
 const constantObj = require("./../config/constants");
 
-/* Save/Update OccasionType */
-exports.CreateOccasionType = (req, res, next) => {
-  if (req.body._id) {
+/* Save OccasionType */
+exports.CreateOccasionType = (req, res) => {
+    OccasionTypeModel(req.body).save(req.body, function(err, response) {
+        if (err) {
+            return res.jsonp({
+                status: 'Failure',
+                messageId: 203,
+                message: constantObj.messages.ErrorRetreivingData
+            })
+        } 
+
+        return res.jsonp({
+            status: 'Success',
+            messageId: 200,
+            message: constantObj.messages.RecordCreated
+        })
+    })
+}
+
+/* Update OccasionType */
+exports.UpdateOccasionType = (req, res) => {
     let inputJSON = {
         name: req.body.name,
         description: req.body.description ? req.body.description : null
@@ -16,35 +34,36 @@ exports.CreateOccasionType = (req, res, next) => {
                 message: constantObj.messages.ErrorRetreivingData
             })
         }
-
-        return res.jsonp({
-            status: 'Success',
-            messageId: 200,
-            message: constantObj.messages.RecordUpdated
-        })
-    })
-  } else {
-        OccasionTypeModel(req.body).save(req.body, function(err, response) {
-            if (err) {
+        if(response){
+            OccasionTypeModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, data) {
+                if (err) {
+                    return res.jsonp({
+                        status: 'Failure',
+                        messageId: 203,
+                        message: constantObj.messages.ErrorRetreivingData
+                    })
+                }
+        
                 return res.jsonp({
-                    status: 'Failure',
-                    messageId: 203,
-                    message: constantObj.messages.ErrorRetreivingData
+                    status: 'Success',
+                    messageId: 200,
+                    message: constantObj.messages.RecordUpdated,
+                    data: data
                 })
-            } 
-
-            return res.jsonp({
-                status: 'Success',
-                messageId: 200,
-                message: constantObj.messages.RecordCreated
             })
-        })
-    }
-}
+        } else {
+            return res.jsonp({
+                status: 'Failure',
+                messageId: 203,
+                message: constantObj.messages.ErrorRetreivingData
+            })
+        }
+    })
+  }
 
 // Get OccasionTypes
-exports.GetOccasionTypes = (req, res, next) => {
-    OccasionTypeModel.find().lean().sort({"createdAt": -1}).exec(function(err, response) {
+exports.GetOccasionTypes = (req, res) => {
+    OccasionTypeModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -63,26 +82,37 @@ exports.GetOccasionTypes = (req, res, next) => {
 }
 
 // Delete OccasionType.
-exports.DeleteOccasionType = (req, res, next) => {
-	OccasionTypeModel.remove({_id: req.body._id}, function (err, data) {
-		if (err) {
-			return res.jsonp({
+exports.DeleteOccasionType = (req, res) => {
+    OccasionTypeModel.updateOne({ _id: req.body._id }, { $set: {is_deleted: true} }, function(err, response) {
+        if (err) {
+            return res.jsonp({
                 status: 'Failure',
                 messageId: 203,
                 message: constantObj.messages.ErrorRetreivingData
             })
-		}
+        }
 
-        return res.jsonp({
-            status: 'Success',
-            messageId: 200,
-            message: constantObj.messages.RecordDeleted,
+        OccasionTypeModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, data) {
+            if (err) {
+                return res.jsonp({
+                    status: 'Failure',
+                    messageId: 203,
+                    message: constantObj.messages.ErrorRetreivingData
+                })
+            }
+    
+            return res.jsonp({
+                status: 'Success',
+                messageId: 200,
+                message: constantObj.messages.RecordDeleted,
+                data: data
+            })
         })
-	})
+    })
 }
 
-exports.GetOccasionTypeById = (req, res, next) => {
-	OccasionTypeModel.findOne({_id: req.params.id}).exec(function(err, response) {
+exports.GetOccasionTypeById = (req, res) => {
+	OccasionTypeModel.findOne({_id: req.body._id}).exec(function(err, response) {
 		if (err) {
 			return res.jsonp({
                 status: 'Failure',
