@@ -16,6 +16,12 @@ mongoose.connect(DBURL, options).then(
         console.log('%s MongoDB Connected Successfully.', chalk.green('✓'));
         // Creating super admin for first time
 
+        mongoose.connection.db.dropCollection("occasiontypes",
+            function(err, result) {
+                console.log("Collection droped");
+            }
+        );
+
         UserModel.findOne({ user_type: 1 }, function(err, data) {
             if (!data) {
                 let superAdmin = ConstantObj.superAdminJson;

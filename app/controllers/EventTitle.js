@@ -1,9 +1,9 @@
-const OccasionTypeModel = require("./../models/OccasionType");
+const EventTypeModel = require("./../models/EventTitle");
 const constantObj = require("./../config/constants");
 
-/* Save OccasionType */
-exports.CreateOccasionType = (req, res) => {
-    OccasionTypeModel(req.body).save(req.body, function(err, response) {
+/* Save EventType */
+exports.CreateEventType = (req, res) => {
+    EventTypeModel(req.body).save(req.body, function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -20,13 +20,13 @@ exports.CreateOccasionType = (req, res) => {
     })
 }
 
-/* Update OccasionType */
-exports.UpdateOccasionType = (req, res) => {
+/* Update EventType */
+exports.UpdateEventType = (req, res) => {
     let inputJSON = {
         name: req.body.name,
         description: req.body.description ? req.body.description : null
     };
-    OccasionTypeModel.updateOne({ _id: req.body._id }, { $set: inputJSON }, function(err, response) {
+    EventTypeModel.updateOne({ _id: req.body._id }, { $set: inputJSON }, function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -35,7 +35,7 @@ exports.UpdateOccasionType = (req, res) => {
             })
         }
         if(response){
-            OccasionTypeModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, data) {
+            EventTypeModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, data) {
                 if (err) {
                     return res.jsonp({
                         status: 'Failure',
@@ -61,9 +61,9 @@ exports.UpdateOccasionType = (req, res) => {
     })
 }
 
-// Get OccasionTypes
-exports.GetOccasionTypes = (req, res) => {
-    OccasionTypeModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, response) {
+// Get EventTypes
+exports.GetEventTypes = (req, res) => {
+    EventTypeModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -81,9 +81,9 @@ exports.GetOccasionTypes = (req, res) => {
     })
 }
 
-// Delete OccasionType.
-exports.DeleteOccasionType = (req, res) => {
-    OccasionTypeModel.updateOne({ _id: req.body._id }, { $set: {is_deleted: true} }, function(err, response) {
+// Delete EventType.
+exports.DeleteEventType = (req, res) => {
+    EventTypeModel.updateOne({ _id: req.body._id }, { $set: {is_deleted: true} }, function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -92,7 +92,7 @@ exports.DeleteOccasionType = (req, res) => {
             })
         }
 
-        OccasionTypeModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, data) {
+        EventTypeModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, data) {
             if (err) {
                 return res.jsonp({
                     status: 'Failure',
@@ -111,8 +111,8 @@ exports.DeleteOccasionType = (req, res) => {
     })
 }
 
-exports.GetOccasionTypeById = (req, res) => {
-	OccasionTypeModel.findOne({_id: req.body._id}).exec(function(err, response) {
+exports.GetEventTypeById = (req, res) => {
+	EventTypeModel.findOne({_id: req.body._id}).exec(function(err, response) {
 		if (err) {
 			return res.jsonp({
                 status: 'Failure',
