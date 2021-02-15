@@ -59,7 +59,7 @@ exports.UpdateOccasionType = (req, res) => {
             })
         }
     })
-  }
+}
 
 // Get OccasionTypes
 exports.GetOccasionTypes = (req, res) => {
