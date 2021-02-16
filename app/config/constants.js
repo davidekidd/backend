@@ -18,7 +18,9 @@ const messages = {
     "CashGiftSaved": "Cash gift has been saved successfully.",
     "RecordCreated": "Record has been created successfully.",
     "RecordUpdated": "Record has been updated successfully.",
-    "RecordDeleted": "Record has been deleted successfully."
+    "RecordDeleted": "Record has been deleted successfully.",
+    "ImageUploaded": "Image has been uploaded successfully.",
+    "ImageDeleted": "Image has been deleted successfully.",
 }
 
 const adminUserJson = {
