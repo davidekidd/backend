@@ -15,11 +15,11 @@ mongoose.connect(DBURL, options).then(
     () => { /** ready to use*/ 
         console.log('%s MongoDB Connected Successfully.', chalk.green('✓'));
 
-        mongoose.connection.db.dropCollection("imagecategories",
-            function(err, result) {
-                console.log("Collection droped");
-            }
-        );
+        // mongoose.connection.db.dropCollection("imagecategories",
+        //     function(err, result) {
+        //         console.log("Collection droped");
+        //     }
+        // );
         // Creating super admin for first time
         UserModel.findOne({ user_type: 1 }).lean().exec(function(err, data) {
             if (!data) {
