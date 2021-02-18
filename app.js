@@ -42,13 +42,13 @@ const indexRouter = require('./app/routes/index');
 const adminAuthRoutes = require("./app/routes/AdminAuth");
 const cashGiftRoutes = require("./app/routes/CashGift");
 const eventTitleRoutes = require("./app/routes/EventTitle");
-const imageCatgoryRoutes = require("./app/routes/ImageCatgory");
+const eventImagesRoutes = require("./app/routes/EventImages");
 
 app.use('/api', indexRouter);
 app.use("/api/v1/admin-auth", adminAuthRoutes);
 app.use("/api/v1/cash-gift", cashGiftRoutes);
 app.use("/api/v1/event-title", eventTitleRoutes);
-app.use("/api/v1/image-category", imageCatgoryRoutes);
+app.use("/api/v1/event-images", eventImagesRoutes);
 
 
 // catch 404 and forward to error handler

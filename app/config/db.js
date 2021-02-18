@@ -15,7 +15,7 @@ mongoose.connect(DBURL, options).then(
     () => { /** ready to use*/ 
         console.log('%s MongoDB Connected Successfully.', chalk.green('✓'));
 
-        // mongoose.connection.db.dropCollection("occasiontypes",
+        // mongoose.connection.db.dropCollection("imagecategories",
         //     function(err, result) {
         //         console.log("Collection droped");
         //     }

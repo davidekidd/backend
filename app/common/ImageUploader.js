@@ -26,8 +26,9 @@ const upload = multer({
   storage: multerS3({
     s3,
     bucket: process.env.Bucket,
-    acl: process.env.ACL,
+    acl: process.env.Acl,
     key: function (req, file, cb) {
+      console.log("reqsss", req, file)
       cb(null, Date.now().toString())
     }
   })

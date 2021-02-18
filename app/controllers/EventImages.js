@@ -1,5 +1,5 @@
-const ImageCategoryModel = require("./../models/ImageCategory");
-const constantObj = require("./../config/constants");
+const EventImageModel = require("../models/EventImages");
+const constantObj = require("../config/constants");
 
 const upload = require('../common/ImageUploader');
 const singleUpload = upload.single('image');
@@ -7,9 +7,9 @@ const singleUpload = upload.single('image');
 const aws = require('aws-sdk');
 const s3 = new aws.S3();
 
-/* Save ImageCategory */
-exports.CreateImageCategory = (req, res, next) => {
-    ImageCategoryModel(req.body).save(req.body, function(err, response) {
+/* Save EventImage */
+exports.CreateEventImage = (req, res, next) => {
+    EventImageModel(req.body).save(req.body, function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -26,13 +26,13 @@ exports.CreateImageCategory = (req, res, next) => {
     })
 }
 
-/* Update ImageCategory */
-exports.UpdateImageCategory = (req, res) => {
+/* Update EventImage */
+exports.UpdateEventImage = (req, res) => {
     let inputJSON = {
         name: req.body.name,
         description: req.body.description ? req.body.description : null
     };
-    ImageCategoryModel.updateOne({ _id: req.body._id }, { $set: inputJSON }, function(err, response) {
+    EventImageModel.updateOne({ _id: req.body._id }, { $set: inputJSON }, function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -41,7 +41,7 @@ exports.UpdateImageCategory = (req, res) => {
             })
         }
         if(response){
-            ImageCategoryModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, data) {
+            EventImageModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, data) {
                 if (err) {
                     return res.jsonp({
                         status: 'Failure',
@@ -67,9 +67,9 @@ exports.UpdateImageCategory = (req, res) => {
     })
 }
   
-// Get ImageCategorys
+// Get EventImages
 exports.GetImageCategories = (req, res, next) => {
-    ImageCategoryModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, response) {
+    EventImageModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -87,9 +87,9 @@ exports.GetImageCategories = (req, res, next) => {
     })
 }
   
-// Delete ImageCategory.
-exports.DeleteImageCategory = (req, res, next) => {
-    ImageCategoryModel.updateOne({ _id: req.body._id }, { $set: {is_deleted: true} }, function(err, response) {
+// Delete EventImage.
+exports.DeleteEventImage = (req, res, next) => {
+    EventImageModel.updateOne({ _id: req.body._id }, { $set: {is_deleted: true} }, function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -98,7 +98,7 @@ exports.DeleteImageCategory = (req, res, next) => {
             })
         }
 
-        ImageCategoryModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, data) {
+        EventImageModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, data) {
             if (err) {
                 return res.jsonp({
                     status: 'Failure',
@@ -117,9 +117,9 @@ exports.DeleteImageCategory = (req, res, next) => {
     })
 }
 
-// GetImageCategoryById
-exports.GetImageCategoryById = (req, res, next) => {
-    ImageCategoryModel.findOne({_id: req.body._id}).exec(function(err, response) {
+// GetEventImageById
+exports.GetEventImageById = (req, res, next) => {
+    EventImageModel.findOne({_id: req.body._id}).exec(function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -138,6 +138,7 @@ exports.GetImageCategoryById = (req, res, next) => {
 }
 
 exports.UploadImage = (req, res) => {
+    console.log("req 1", req.body)
     singleUpload(req, res, function(err) {
       if (err) {
         console.log(err);
@@ -147,7 +148,9 @@ exports.UploadImage = (req, res) => {
             message: constantObj.messages.ErrorRetreivingData
         });
       } 
-      return res.jsonp( {
+
+      console.log("req.file", req.file);
+      return res.jsonp({
         status: 'Success',
         messageId: 200,
         message: constantObj.messages.ImageUploaded,
