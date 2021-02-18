@@ -28,8 +28,7 @@ const upload = multer({
     bucket: process.env.Bucket,
     acl: process.env.Acl,
     key: function (req, file, cb) {
-      console.log("reqsss", req, file)
-      cb(null, Date.now().toString())
+      cb(null, "EventImages/" + Date.now().toString())
     }
   })
 });

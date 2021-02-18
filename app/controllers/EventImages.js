@@ -1,4 +1,6 @@
-const EventImageModel = require("../models/EventImages");
+const EventImageTypeModel = require("../models/EventImageTypes");
+const EventImagesModel = require("../models/EventImages");
+
 const constantObj = require("../config/constants");
 
 const upload = require('../common/ImageUploader');
@@ -9,7 +11,7 @@ const s3 = new aws.S3();
 
 /* Save EventImage */
 exports.CreateEventImage = (req, res, next) => {
-    EventImageModel(req.body).save(req.body, function(err, response) {
+    EventImageTypeModel(req.body).save(req.body, function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -32,7 +34,7 @@ exports.UpdateEventImage = (req, res) => {
         name: req.body.name,
         description: req.body.description ? req.body.description : null
     };
-    EventImageModel.updateOne({ _id: req.body._id }, { $set: inputJSON }, function(err, response) {
+    EventImageTypeModel.updateOne({ _id: req.body._id }, { $set: inputJSON }, function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -41,7 +43,7 @@ exports.UpdateEventImage = (req, res) => {
             })
         }
         if(response){
-            EventImageModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, data) {
+            EventImageTypeModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, data) {
                 if (err) {
                     return res.jsonp({
                         status: 'Failure',
@@ -69,7 +71,7 @@ exports.UpdateEventImage = (req, res) => {
   
 // Get EventImages
 exports.GetImageCategories = (req, res, next) => {
-    EventImageModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, response) {
+    EventImageTypeModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -89,7 +91,7 @@ exports.GetImageCategories = (req, res, next) => {
   
 // Delete EventImage.
 exports.DeleteEventImage = (req, res, next) => {
-    EventImageModel.updateOne({ _id: req.body._id }, { $set: {is_deleted: true} }, function(err, response) {
+    EventImageTypeModel.updateOne({ _id: req.body._id }, { $set: {is_deleted: true} }, function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -98,7 +100,7 @@ exports.DeleteEventImage = (req, res, next) => {
             })
         }
 
-        EventImageModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, data) {
+        EventImageTypeModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, data) {
             if (err) {
                 return res.jsonp({
                     status: 'Failure',
@@ -119,7 +121,7 @@ exports.DeleteEventImage = (req, res, next) => {
 
 // GetEventImageById
 exports.GetEventImageById = (req, res, next) => {
-    EventImageModel.findOne({_id: req.body._id}).exec(function(err, response) {
+    EventImageTypeModel.findOne({_id: req.body._id}).exec(function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -138,44 +140,112 @@ exports.GetEventImageById = (req, res, next) => {
 }
 
 exports.UploadImage = (req, res) => {
-    console.log("req 1", req.body)
     singleUpload(req, res, function(err) {
       if (err) {
-        console.log(err);
         return res.jsonp({
             status: 'Failure',
             messageId: 203,
             message: constantObj.messages.ErrorRetreivingData
         });
       } 
-
-      console.log("req.file", req.file);
       return res.jsonp({
         status: 'Success',
         messageId: 200,
-        message: constantObj.messages.ImageUploaded,
         data: req.file
       });
     });
 };
 
-exports.DeleteUploadedImage = (req, res, next) => {
-    const params = {
-      Bucket: process.env.Bucket,
-      Key: req.body.filename
-    };
-    s3.deleteObject(params, function(err, data) {
-      if (err) {
-        return res.jsonp({
-          status: 'failed',
-          messageId: 203,
-          message: constantObj.messages.ErrorRetreivingData
+exports.UploadImageData = (req, res) => {
+    let Input = req.body;
+    SaveEachImage(Input, 0, res);
+};
+
+function SaveEachImage(Input, k, res){
+    if(k < Input.image_types.length){
+        let InputJSON = {
+            image: Input.image,
+            event_image_type: Input.image_types[k]
+        }
+        EventImagesModel(InputJSON).save(InputJSON, function(err, response) {
+            k++;
+            SaveEachImage(Input, k, res);
         })
-      }
-      return  res.jsonp({
-        status: 'success',
-        messageId: 200,
-        message: constantObj.messages.ImageDeleted
-      })
-    });
+    } else {
+        return res.jsonp({
+            status: 'Success',
+            messageId: 200,
+            message: constantObj.messages.ImageUploaded,
+        });
+    }
+}
+
+// Get EventImages
+exports.GetEventImageList = (req, res, next) => {
+    EventImagesModel.find({is_deleted: false}).populate('event_image_type', 'name').lean().sort({"createdAt": -1}).exec(function(err, response) {
+        if (err) {
+            return res.jsonp({
+                status: 'Failure',
+                messageId: 203,
+                message: constantObj.messages.ErrorRetreivingData
+            })
+        }
+
+        return res.jsonp({
+            status: 'Success',
+            messageId: 200,
+            message: constantObj.messages.SuccessRetreivingData,
+            data: response
+        })
+    })
+}
+
+exports.DeleteUploadedImage = (req, res, next) => {
+    EventImagesModel.updateOne({ _id: req.body._id }, { $set: {is_deleted: true} }, function(err, response) {
+        if (err) {
+            return res.jsonp({
+                status: 'Failure',
+                messageId: 203,
+                message: constantObj.messages.ErrorRetreivingData
+            })
+        }
+
+        EventImagesModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, data) {
+            if (err) {
+                return res.jsonp({
+                    status: 'Failure',
+                    messageId: 203,
+                    message: constantObj.messages.ErrorRetreivingData
+                })
+            }
+
+            return res.jsonp({
+                status: 'Success',
+                messageId: 200,
+                message: constantObj.messages.ImageDeleted,
+                data: data
+            })
+
+            // const params = {
+            //     Bucket: process.env.Bucket,
+            //     Key: req.body.filename
+            // };
+            // s3.deleteObject(params, function(err, data1) {
+            //     if (err) {
+            //         return res.jsonp({
+            //             status: 'failed',
+            //             messageId: 203,
+            //             message: constantObj.messages.ErrorRetreivingData
+            //         })
+            //     }
+
+            //     return res.jsonp({
+            //         status: 'Success',
+            //         messageId: 200,
+            //         message: constantObj.messages.ImageDeleted,
+            //         data: data
+            //     })
+            // });
+        })
+    })
 }
