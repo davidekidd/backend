@@ -4,7 +4,7 @@ const chalk = require("chalk");
 const UserModel = require("./../models/User");
 const ConstantObj = require("./../config/constants");
 
-const DBURL = process.env.LOCAL;
+const DBURL = process.env.MONGODB_PROD;
 
 const options = { 
     useCreateIndex: true, 

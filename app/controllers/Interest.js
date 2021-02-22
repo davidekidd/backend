@@ -1,6 +1,8 @@
 const InterestModel = require("./../models/Interest");
 const constantObj = require("./../config/constants");
 
+const lodash = require('lodash');
+
 /* Save Interest */
 exports.CreateInterest = (req, res) => {
     InterestModel(req.body).save(req.body, function(err, response) {
@@ -127,5 +129,46 @@ exports.GetInterestById = (req, res) => {
             message: constantObj.messages.SuccessRetreivingData,
             data: response
         })
+    })
+}
+
+// Get List Of Interest Mobile App
+exports.GetInterestMobileApp = (req, res) => {
+    InterestModel.find({is_deleted: false}).lean()
+    .sort({"updatedAt": -1})
+    .exec(function(err, response) {
+        if (err) {
+            return res.jsonp({
+                status: 'Failure',
+                messageId: 203,
+                message: constantObj.messages.ErrorRetreivingData
+            })
+        }
+        if(response.length > 0){
+            let result = lodash.chain(response).groupBy("type").map(function(v, i) {
+                return {
+                    name: i,
+                    interests: lodash.map(v, function(w, k) {
+                        return {
+                            name: w.name
+                        }
+                    })
+                }
+            }).value();
+    
+            return res.jsonp({
+                status: 'Success',
+                messageId: 200,
+                message: constantObj.messages.SuccessRetreivingData,
+                data: result
+            })
+        } else {
+            return res.jsonp({
+                status: 'Success',
+                messageId: 200,
+                message: constantObj.messages.SuccessRetreivingData,
+                data: []
+            })
+        }
     })
 }

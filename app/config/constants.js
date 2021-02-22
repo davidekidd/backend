@@ -5,7 +5,7 @@ const ciphertext12 = CryptoJS.AES.encrypt(pass12, process.env.EncryptionKey);
 const password12 = ciphertext12.toString();
 
 const messages = {
-	"SuccessRetreivingData": "Data successfully retreived.",
+	"SuccessRetreivingData": "Data successfully retrieved.",
 	"ErrorRetreivingData": "Opps!! Something went wrong. Please try again.",
 	"UnauthorizedAccessError": "OOPS! You are not authorized to access. Please contact us at contact@gameygram.com",
 	"LoginSuccess": "Welcome!!",
