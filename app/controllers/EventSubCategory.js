@@ -1,9 +1,9 @@
-const EventTypeModel = require("./../models/EventTitle");
+const EventSubCategoryModel = require("./../models/EventSubcategory");
 const constantObj = require("./../config/constants");
 
-/* Save EventType */
-exports.CreateEventType = (req, res) => {
-    EventTypeModel(req.body).save(req.body, function(err, response) {
+/* Save EventSubCategory */
+exports.CreateEventSubCategory = (req, res) => {
+    EventSubCategoryModel(req.body).save(req.body, function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -20,13 +20,16 @@ exports.CreateEventType = (req, res) => {
     })
 }
 
-/* Update EventType */
-exports.UpdateEventType = (req, res) => {
+/* Update EventSubCategory */
+exports.UpdateEventSubCategory = (req, res) => {
     let inputJSON = {
+        event_title: req.body.event_title,
+        event_images: req.body.event_images,
         name: req.body.name,
-        description: req.body.description ? req.body.description : null
+        start_date: req.body.start_date,
+        end_date: req.body.end_date
     };
-    EventTypeModel.updateOne({ _id: req.body._id }, { $set: inputJSON }, function(err, response) {
+    EventSubCategoryModel.updateOne({ _id: req.body._id }, { $set: inputJSON }, function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -35,7 +38,7 @@ exports.UpdateEventType = (req, res) => {
             })
         }
         if(response){
-            EventTypeModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, data) {
+            EventSubCategoryModel.find({is_deleted: false}).lean().populate('event_images', 'name').populate('event_title', 'name').sort({"updatedAt": -1}).exec(function(err, data) {
                 if (err) {
                     return res.jsonp({
                         status: 'Failure',
@@ -61,9 +64,9 @@ exports.UpdateEventType = (req, res) => {
     })
 }
 
-// Get EventTypes
-exports.GetEventTypes = (req, res) => {
-    EventTypeModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, response) {
+// Get EventSubCategories
+exports.GetEventSubCategories = (req, res) => {
+    EventSubCategoryModel.find({is_deleted: false}).lean().populate('event_images', 'name').populate('event_title', 'name').sort({"updatedAt": -1}).exec(function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -81,9 +84,9 @@ exports.GetEventTypes = (req, res) => {
     })
 }
 
-// Delete EventType.
-exports.DeleteEventType = (req, res) => {
-    EventTypeModel.updateOne({ _id: req.body._id }, { $set: {is_deleted: true} }, function(err, response) {
+// Delete EventSubCategory.
+exports.DeleteEventSubCategory = (req, res) => {
+    EventSubCategoryModel.updateOne({ _id: req.body._id }, { $set: {is_deleted: true} }, function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -92,7 +95,7 @@ exports.DeleteEventType = (req, res) => {
             })
         }
 
-        EventTypeModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, data) {
+        EventSubCategoryModel.find({is_deleted: false}).lean().populate('event_images', 'name').populate('event_title', 'name').sort({"updatedAt": -1}).exec(function(err, data) {
             if (err) {
                 return res.jsonp({
                     status: 'Failure',
@@ -111,8 +114,9 @@ exports.DeleteEventType = (req, res) => {
     })
 }
 
-exports.GetEventTypeById = (req, res) => {
-	EventTypeModel.findOne({_id: req.body._id}).exec(function(err, response) {
+exports.GetEventSubCategoryById = (req, res) => {
+	EventSubCategoryModel.findOne({_id: req.body._id}).exec(function(err, response) {
+        console.log("err", err, req.body._id)
 		if (err) {
 			return res.jsonp({
                 status: 'Failure',

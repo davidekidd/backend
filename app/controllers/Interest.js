@@ -35,7 +35,7 @@ exports.UpdateInterest = (req, res) => {
             })
         }
         if(response){
-            InterestModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, data) {
+            InterestModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, data) {
                 if (err) {
                     return res.jsonp({
                         status: 'Failure',
@@ -63,7 +63,7 @@ exports.UpdateInterest = (req, res) => {
 
 // Get Interests
 exports.GetInterests = (req, res) => {
-    InterestModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, response) {
+    InterestModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',

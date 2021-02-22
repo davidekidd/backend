@@ -43,7 +43,7 @@ exports.UpdateEventImage = (req, res) => {
             })
         }
         if(response){
-            EventImageTypeModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, data) {
+            EventImageTypeModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, data) {
                 if (err) {
                     return res.jsonp({
                         status: 'Failure',
@@ -71,7 +71,7 @@ exports.UpdateEventImage = (req, res) => {
   
 // Get EventImages
 exports.GetImageCategories = (req, res, next) => {
-    EventImageTypeModel.find({is_deleted: false}).lean().sort({"createdAt": -1}).exec(function(err, response) {
+    EventImageTypeModel.find({is_deleted: false}).lean().sort({"updatedAt": -1}).exec(function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
@@ -182,7 +182,7 @@ function SaveEachImage(Input, k, res){
 
 // Get EventImages
 exports.GetEventImageList = (req, res, next) => {
-    EventImagesModel.find({is_deleted: false}).populate('event_image_type', 'name').lean().sort({"createdAt": -1}).exec(function(err, response) {
+    EventImagesModel.find({is_deleted: false}).populate('event_image_type', 'name').lean().sort({"updatedAt": -1}).exec(function(err, response) {
         if (err) {
             return res.jsonp({
                 status: 'Failure',
